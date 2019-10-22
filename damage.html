@@ -19,37 +19,41 @@
 	}
 </style>
 <body>
-	<h1>伤害时间计算</h1>
+	<h1>伤害时间计算(个人信息-搭配)</h1>
+	<h2>个人信息-搭配-查看详情可得以下数据</h2>
 	<div class="div-out" style="">
 		<div class="div-line">
-			<p>boss血量：</p><input type="number" id="bs_xl" value="300000">
+			<p>预期输出伤害：</p><input type="number" id="bs_xl" value="300000">
+		</div>
+		<div class="div-line">
+			<p>预期输出时间（为0不限制）：</p><input type="number" id="sj_xz" value="0">
 		</div>
 		<div class="div-line">
 			<p>面板伤害：</p><input type="number" id="mb_sh" value="4109">
 		</div>
 		<div class="div-line">
-			<p>属性伤害：</p><input type="number" id="sx_sh" value="0">
+			<p>X系攻击力：</p><input type="number" id="sx_sh" value="0">
 		</div>
 		<div class="div-line">
-			<p>飞镖附加伤害：</p><input type="number" id="fb_fj_sh" value="0">
+			<p>飞镖球攻击力：</p><input type="number" id="fb_fj_sh" value="0">
 		</div>
 		<div class="div-line">
-			<p>飞镖球冷却：</p><input type="number" id="fb_lq" value="6">
+			<p>飞镖球出现间隔：</p><input type="number" id="fb_lq" value="6">
 		</div>
 		<div class="div-line">
-			<input type="checkbox" id="fb_sx" checked="checked">飞镖球同属性
+			<input type="checkbox" id="fb_sx" checked="checked">飞镖球是否同属性
 		</div>
 		<div class="div-line">
-			<p>忍术附加伤害：</p><input type="number" id="rs_fj_sh" value="100">
+			<p>忍术攻击力</p><input type="number" id="rs_fj_sh" value="100">
 		</div>
 		<div class="div-line">
-			<p>忍术系数：</p><input type="number" id="rs_xs" value="22">
+			<p>忍术系数（自己实验得到）：</p><input type="number" id="rs_xs" value="22">
 		</div>
 		<div class="div-line">
-			<p>武器附加伤害：</p><input type="number" id="wq_fj_sh" value="0">
+			<p>武器攻击力：</p><input type="number" id="wq_fj_sh" value="0">
 		</div>
 		<div class="div-line">
-			<p>武器冷却缩减：</p><input type="number" id="wq_lq_sj" value="0">
+			<p>武器技能冷却时间：</p><input type="number" id="wq_lq_sj" value="0">
 		</div>
 		<div class="div-line">
 			<p>主武器系数：</p><input type="number" id="zwq_xs" value="6">
@@ -58,7 +62,7 @@
 			<p>主武器冷却：</p><input type="number" id="zwq_lq" value="35">
 		</div>
 		<div class="div-line">
-			<input type="checkbox" id="zwq_sx" checked="checked">主武器同属性
+			<input type="checkbox" id="zwq_sx" checked="checked">主武器是否同系
 		</div>
 		<div class="div-line">
 			<p>副武器系数：</p><input type="number" id="fwq_xs" value="5">
@@ -67,7 +71,16 @@
 			<p>副武器冷却：</p><input type="number" id="fwq_lq" value="29.5">
 		</div>
 		<div class="div-line">
-			<input type="checkbox" id="fwq_sx" checked="checked">副武器同属性
+			<p>副武器提前冷却（跑图）：</p><input type="number" id="fwq_tq_lq" value="60">
+		</div>
+		<div class="div-line">
+			<input type="checkbox" id="fwq_sx" checked="checked">副武器是否同系
+		</div>
+		<div class="div-line">
+			<p>图属性：</p>
+			<input type="radio" name="tu" id="is_wu" checked="checked">无
+			<input type="radio" name="tu" id="is_jg">禁锢
+			<input type="radio" name="tu" id="is_jx">缴械
 		</div>
 		<div class="div-line">
 			<button onclick="calc()" style="width: 100%">计算</button>
@@ -75,7 +88,11 @@
 	</div>
 	<div class="div-out">
 		<div class="div-line">
-			<p style="display: inline;">需要时间：</p><input type="number" id="xy_sj" value="0" disabled="disabled">
+			<p style="display: inline;">需要时间：</p><input style="display: block;" type="number" id="xy_sj" value="0" disabled="disabled">
+			<p style="display: inline;">总计伤害：</p><input style="display: block;" type="number" id="xy_sh" value="0" disabled="disabled">
+			<p style="display: inline;">忍术伤害：</p><input style="display: block;" type="number" id="rs_sh" value="0" disabled="disabled">
+			<p style="display: inline;">飞镖伤害：</p><input style="display: block;" type="number" id="fb_sh" value="0" disabled="disabled">
+			<p style="display: inline;">武器伤害：</p><input style="display: block;" type="number" id="wq_sh" value="0" disabled="disabled">
 			<div id="info">
 			</div>
 		</div>
@@ -93,7 +110,12 @@
 	function calc() {
 		var time = 0;
 		var damage = 0;
+		var allDamage = 0;
+		var wqDamage = 0;
+		var rsDamage = 0;
+		var fbDamage = 0;
 		var bs_xl = +$('#bs_xl').val();
+		var sj_xz = +$('#sj_xz').val();
 		var mb_sh = +$('#mb_sh').val();
 		var sx_sh = +$('#sx_sh').val();
 		var rs_fj_sh = +$('#rs_fj_sh').val();
@@ -109,43 +131,60 @@
 		var fwq_xs = +$('#fwq_xs').val();
 		var fwq_lq = +$('#fwq_lq').val() * 4;
 		var fwq_sx = $('#fwq_sx').is(":checked");	//副武器是否为对应属性
+		var fwq_tq_lq = +$('#fwq_tq_lq').val();
+
+		var is_jg = +$('#is_jg').is(":checked");
+		var is_jx = +$('#is_jx').is(":checked");
 
 		var fb_index = 0;
 		var zwq_index = 0;		// 初始认为主武器已经冷却
-		var fwq_index = 0.6;	// 初始认为服务器已经冷却了40%
+		var fwq_index = 1;		// 副武器认为不冷却(提前冷却时间加到计算里)
 
 		var info = "";
 		// 计算大招
-		damage = (mb_sh + sx_sh + rs_fj_sh) * rs_xs;
-		bs_xl -= damage;
-		info += getFormatTime(time) + "忍术伤害" + damage + "</br>"
+		if (!is_jg) {
+			damage = (mb_sh + sx_sh + rs_fj_sh) * rs_xs * (is_jx ? 1.4 : 1);
+			rsDamage += damage;
+			allDamage += damage;
+			info += getFormatTime(time) + "忍术伤害" + damage + "</br>"
+		}
 
-		while (bs_xl > 0) {
+		while (allDamage < bs_xl) {
 			// 判断飞镖球
 			if (time / fb_lq >= fb_index) {
 				fb_index++;
-				damage = Math.floor((mb_sh + (fb_sx ? sx_sh : 0) + fb_fj_sh) / 10) * 10;
-				bs_xl -= damage;
+				damage = Math.floor((mb_sh + (fb_sx ? sx_sh : 0) + fb_fj_sh) * (is_jg ? 2 : 1) * (is_jx ? 1.4 : 1) / 10) * 10 ;
+				fbDamage += damage;
+				allDamage += damage;
 				info += getFormatTime(time) + "飞镖球" + damage + "</br>"
 			}
 			// 判断主武器
-			if (time / zwq_lq >= zwq_index) {
+			if (!is_jx && time / zwq_lq >= zwq_index) {
 				zwq_index++;
 				damage = (mb_sh + (zwq_sx ? sx_sh : 0) + wq_fj_sh) * zwq_xs * (100 - wq_lq_sj) / 100;
-				bs_xl -= damage;
+				wqDamage += damage;
+				allDamage += damage;
 				info += getFormatTime(time) + "主武器" + damage + "</br>"
 			}
-			// 判断飞镖球
-			if (time / fwq_lq >= fwq_index) {
+			// 判断副武器
+			if (!is_jx && (time + fwq_tq_lq) / fwq_lq >= fwq_index) {
 				fwq_index++;
 				damage = (mb_sh + (fwq_sx ? sx_sh : 0) + wq_fj_sh) * fwq_xs * (100 - wq_lq_sj) / 100;
-				bs_xl -= damage;
+				wqDamage += damage;
+				allDamage += damage;
 				info += getFormatTime(time) + "副武器" + damage + "</br>"
 			}
 			time++;
+			if (sj_xz != 0 && time > sj_xz) {
+				break;
+			}
 		}
 		$('#info').html(info);
 		$('#xy_sj').val(time - 1);
+		$('#xy_sh').val(allDamage);
+		$('#rs_sh').val(rsDamage);
+		$('#fb_sh').val(fbDamage);
+		$('#wq_sh').val(wqDamage);
 	}
 
 	function getFormatTime(time) {
