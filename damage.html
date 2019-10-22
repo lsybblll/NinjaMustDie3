@@ -124,7 +124,7 @@
 			// 判断飞镖球
 			if (time / fb_lq >= fb_index) {
 				fb_index++;
-				damage = Math.floor((mb_sh + (fb_sx ? sx_sh : 0) + fb_fj_sh) / 100) * 100;
+				damage = Math.floor((mb_sh + (fb_sx ? sx_sh : 0) + fb_fj_sh) / 10) * 10;
 				bs_xl -= damage;
 				info += getFormatTime(time) + "飞镖球" + damage + "</br>"
 			}
