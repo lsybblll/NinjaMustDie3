@@ -159,17 +159,17 @@
 				info += getFormatTime(time) + "飞镖球" + damage + "</br>"
 			}
 			// 判断主武器
-			if (!is_jx && time / zwq_lq >= zwq_index) {
+			if (!is_jx && time / (zwq_lq * (100 - wq_lq_sj) / 100) >= zwq_index) {
 				zwq_index++;
-				damage = (mb_sh + (zwq_sx ? sx_sh : 0) + wq_fj_sh) * zwq_xs * (100 - wq_lq_sj) / 100;
+				damage = (mb_sh + (zwq_sx ? sx_sh : 0) + wq_fj_sh) * zwq_xs;
 				wqDamage += damage;
 				allDamage += damage;
 				info += getFormatTime(time) + "主武器" + damage + "</br>"
 			}
 			// 判断副武器
-			if (!is_jx && (time + fwq_tq_lq) / fwq_lq >= fwq_index) {
+			if (!is_jx && (time + fwq_tq_lq) / (fwq_lq * (100 - wq_lq_sj) / 100) >= fwq_index) {
 				fwq_index++;
-				damage = (mb_sh + (fwq_sx ? sx_sh : 0) + wq_fj_sh) * fwq_xs * (100 - wq_lq_sj) / 100;
+				damage = (mb_sh + (fwq_sx ? sx_sh : 0) + wq_fj_sh) * fwq_xs;
 				wqDamage += damage;
 				allDamage += damage;
 				info += getFormatTime(time) + "副武器" + damage + "</br>"
